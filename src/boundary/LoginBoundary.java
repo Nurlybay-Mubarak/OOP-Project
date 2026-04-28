@@ -1,49 +1,75 @@
+package boundary;                                 
+
+import controller.AuthController;                 
+import model.users.User;                          
 
 import java.io.*;
 import java.util.*;
 
 /**
- * 
+ * Console UI for login/logout.
+ * First screen the user sees when starting the system.
  */
 public class LoginBoundary {
+
+    private Scanner scanner;
+    private AuthController authController;
 
     /**
      * Default constructor
      */
     public LoginBoundary() {
+        this.scanner = new Scanner(System.in);
+        this.authController = new AuthController();
     }
 
     /**
-     * @return
+     * Show login menu and handle authentication
      */
-    public void showLoginMenu() {
-        // TODO implement here
-        return null;
+    public User showLoginMenu() {
+        System.out.println("========================================");
+        System.out.println("  University Management System - Login  ");
+        System.out.println("========================================");
+
+        String login = inputLogin();
+        String password = inputPassword();
+
+        User user = authController.login(login, password);
+
+        if (user == null) {
+            showError("Invalid credentials. Try again.");
+        }
+
+        return user;
     }
 
     /**
-     * @return
+     * Prompt user for login
      */
     public String inputLogin() {
-        // TODO implement here
-        return "";
+        System.out.print("Login: ");
+        return scanner.nextLine().trim();
     }
 
     /**
-     * @return
+     * Prompt user for password
      */
     public String inputPassword() {
-        // TODO implement here
-        return "";
+        System.out.print("Password: ");
+        return scanner.nextLine().trim();
     }
 
     /**
-     * @param message 
-     * @return
+     * Show error message
      */
     public void showError(String message) {
-        // TODO implement here
-        return null;
+        System.out.println("[ERROR] " + message);
     }
 
+    /**
+     * Show success message
+     */
+    public void showSuccess(String message) {
+        System.out.println("[OK] " + message);
+    }
 }

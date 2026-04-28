@@ -1,98 +1,139 @@
-package users;
+package model.users;                             
+
+import enums.ManagerType;                        
+import model.academic.Course;                     
+import model.communication.News;                  
+import model.support.SupportRequest;              
+import storage.DataStore;                         
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * 
+ * Manager can assign courses, approve registration, manage news,
+ * create reports, and view info about students/teachers.
+ * Manager types: OR, DEPARTMENT, DEAN_OFFICE (enumeration).
  */
 public class Manager extends Employee {
+
+    private ManagerType managerType;               
 
     /**
      * Default constructor
      */
     public Manager() {
+        super();
     }
 
     /**
-     * 
+     * Constructor with parameters
      */
-    public void managerType;
-
-
-
-
+    public Manager(String id, String login, String password,
+                   String firstName, String lastName, String email,
+                   String employeeId, double salary, ManagerType managerType) {
+        super(id, login, password, firstName, lastName, email, employeeId, salary);
+        this.managerType = managerType;
+    }
 
     /**
-     * @param c 
-     * @param t 
-     * @return
+     * Assign a course to a teacher
      */
     public void assignCourseToTeacher(Course c, Teacher t) {
-        // TODO implement here
-        return null;
+        t.addCourse(c);
+        c.addTeacher(t);
+        System.out.println("Course " + c.getName() + " assigned to " + t.getFirstName());
     }
 
     /**
-     * @param s 
-     * @return
+     * Approve student's course registration
      */
     public void approveRegistration(Student s) {
-        // TODO implement here
-        return null;
+        System.out.println("Registration approved for student: "
+                + s.getFirstName() + " " + s.getLastName());
     }
 
     /**
-     * @param c 
-     * @param year 
-     * @param major 
-     * @return
+     * Open a course for registration for specific year and major
      */
     public void openCourseForRegistration(Course c, int year, String major) {
-        // TODO implement here
-        return null;
+        c.setAvailableForRegistration(true);
+        c.setTargetYear(year);
+        c.setTargetMajor(major);
+        System.out.println("Course " + c.getName()
+                + " opened for year " + year + ", major: " + major);
     }
 
     /**
-     * @return
+     * Create statistical report on academic performance
      */
     public String createReport() {
-        // TODO implement here
-        return "";
+        DataStore ds = DataStore.getInstance();
+        List<Student> students = ds.getStudents();
+
+        double avgGpa = students.stream()
+                .mapToDouble(Student::getGpa)
+                .average()
+                .orElse(0.0);
+
+        String report = "=== Academic Performance Report ===\n"
+                + "Total students: " + students.size() + "\n"
+                + "Average GPA: " + String.format("%.2f", avgGpa) + "\n";
+
+        System.out.println(report);
+        return report;
     }
 
     /**
-     * @param n 
-     * @return
+     * Manage news (create, pin research topics)
      */
     public void manageNews(News n) {
-        // TODO implement here
-        return null;
+        DataStore.getInstance().addNews(n);
+        System.out.println("News managed: " + n.getTitle());
     }
 
     /**
-     * @param comp 
-     * @return
+     * View students info sorted by given comparator (GPA, alphabetically, etc.)
      */
     public List<Student> viewStudentsInfo(Comparator<Student> comp) {
-        // TODO implement here
-        return null;
+        List<Student> students = new ArrayList<>(DataStore.getInstance().getStudents());
+        students.sort(comp);
+        for (Student s : students) {
+            System.out.println(s);
+        }
+        return students;
     }
 
     /**
-     * @return
+     * View all teachers info
      */
     public List<Teacher> viewTeachersInfo() {
-        // TODO implement here
-        return null;
+        List<Teacher> teachers = DataStore.getInstance().getTeachers();
+        for (Teacher t : teachers) {
+            System.out.println(t);
+        }
+        return teachers;
     }
 
     /**
-     * @return
+     * View requests from employees (signed by dean/rector)
      */
     public List<SupportRequest> viewEmployeeRequests() {
-        // TODO implement here
-        return null;
+        List<SupportRequest> requests = DataStore.getInstance().getRequests();
+        for (SupportRequest r : requests) {
+            System.out.println(r);
+        }
+        return requests;
     }
 
+    // GETTERS & SETTERS
+
+    public ManagerType getManagerType() { return managerType; }
+    public void setManagerType(ManagerType managerType) { this.managerType = managerType; }
+
+    @Override
+    public String toString() {
+        return "Manager: " + getFirstName() + " " + getLastName()
+                + " (" + managerType + ")";
+    }
 }
