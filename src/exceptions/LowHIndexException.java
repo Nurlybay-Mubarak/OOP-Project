@@ -1,23 +1,15 @@
-
-import java.io.*;
-import java.util.*;
+package exceptions;
 
 /**
- * 
+ * Thrown when researcher does not meet minimum h-index requirement
  */
-public class LowHIndexException {
+public class LowHIndexException extends Exception {
 
-    /**
-     * Default constructor
-     */
     public LowHIndexException() {
+        super("H-index is too low");
     }
 
-    /**
-     * @param message
-     */
     public LowHIndexException(String message) {
-        // TODO implement here
+        super(message);
     }
-
 }
