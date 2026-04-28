@@ -1,7 +1,7 @@
-package model.support;                            // ДОБАВЛЕНО
+package model.support;                            
 
-import model.users.User;                          // ДОБАВЛЕНО
-import enums.RequestStatus;                       // ДОБАВЛЕНО
+import model.users.User;                         
+import enums.RequestStatus;                       
 
 import java.io.*;
 import java.util.*;
@@ -12,11 +12,11 @@ import java.util.*;
  */
 public class SupportRequest implements Serializable {
 
-    private String id;                             // ИСПРАВЛЕНО: было public
-    private User author;                           // ИСПРАВЛЕНО: было public
-    private String description;                    // ИСПРАВЛЕНО: было public
-    private RequestStatus status;                  // ИСПРАВЛЕНО: было public
-    private Date createdDate;                      // ИСПРАВЛЕНО: было public
+    private String id;                             
+    private User author;                           
+    private String description;                    
+    private RequestStatus status;                  
+    private Date createdDate;                      
 
     /**
      * Default constructor
@@ -45,7 +45,7 @@ public class SupportRequest implements Serializable {
         System.out.println("Request [" + id + "] status changed to: " + s);
     }
 
-    // ==================== GETTERS & SETTERS ====================
+    // GETTERS & SETTERS
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
