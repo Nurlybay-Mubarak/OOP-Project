@@ -1,93 +1,115 @@
+package storage;
+
+import model.users.User;
+import model.academic.Course;
+import model.communication.News;
+import model.support.SupportRequest;
+import model.research.ResearchPaper;
 
 import java.io.*;
 import java.util.*;
 
 /**
- * 
+ * Singleton class for storing all system data
  */
-public class DataStore {
+public class DataStore implements Serializable {
 
-    /**
-     * Default constructor
-     */
-    public DataStore() {
-    }
+    private static DataStore instance;
 
-    /**
-     * 
-     */
-    private DataStore {static} instance;
-
-    /**
-     * 
-     */
     private List<User> users;
-
-    /**
-     * 
-     */
     private List<Course> courses;
-
-    /**
-     * 
-     */
     private List<News> news;
-
-    /**
-     * 
-     */
     private List<SupportRequest> requests;
-
-    /**
-     * 
-     */
     private List<ResearchPaper> papers;
 
-
-
-
-
-
-
+    private static final String FILE_NAME = "data.ser";
 
     /**
-     * @return
+     * Private constructor (Singleton)
      */
-    public DataStore {static} getInstance() {
-        // TODO implement here
-        return null;
+    private DataStore() {
+        users = new ArrayList<>();
+        courses = new ArrayList<>();
+        news = new ArrayList<>();
+        requests = new ArrayList<>();
+        papers = new ArrayList<>();
     }
 
     /**
-     * @return
+     * Get singleton instance
+     */
+    public static DataStore getInstance() {
+        if (instance == null) {
+            instance = load();
+        }
+        return instance;
+    }
+
+    /**
+     * Save data to file
      */
     public void save() {
-        // TODO implement here
-        return null;
+        try (ObjectOutputStream oos =
+                     new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
+            oos.writeObject(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * @return
+     * Load data from file
      */
-    public void load() {
-        // TODO implement here
-        return null;
+    private static DataStore load() {
+        try (ObjectInputStream ois =
+                     new ObjectInputStream(new FileInputStream(FILE_NAME))) {
+            return (DataStore) ois.readObject();
+        } catch (Exception e) {
+            return new DataStore(); // если файла нет
+        }
     }
 
-    /**
-     * @return
-     */
+    // GETTERS
+
     public List<User> getUsers() {
-        // TODO implement here
-        return null;
+        return users;
     }
 
-    /**
-     * @return
-     */
     public List<Course> getCourses() {
-        // TODO implement here
-        return null;
+        return courses;
     }
 
+    public List<News> getNews() {
+        return news;
+    }
+
+    public List<SupportRequest> getRequests() {
+        return requests;
+    }
+
+    public List<ResearchPaper> getPapers() {
+        return papers;
+    }
+
+    // ADD METHODS
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public void addCourse(Course course) {
+        courses.add(course);
+    }
+
+    public void addNews(News n) {
+        news.add(n);
+    }
+
+    public void addRequest(SupportRequest r) {
+        requests.add(r);
+    }
+
+    public void addPaper(ResearchPaper p) {
+        papers.add(p);
+    }
 }
