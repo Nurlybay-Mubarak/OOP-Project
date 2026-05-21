@@ -1,74 +1,88 @@
-package controller;                              
+package controller;
 
-import model.users.User;                          
-import storage.DataStore;                         
+import model.users.User;
+import patterns.UserFactory;
+import storage.DataStore;
 
-import java.io.*;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * Controller for managing users: add, remove, update, find.
- * Used by Admin to manage the system.
+ * Handles CRUD operations for User objects via the DataStore.
  */
 public class UserController {
 
-    private DataStore dataStore;
+    public UserController() {}
 
     /**
-     * Default constructor
-     */
-    public UserController() {
-        this.dataStore = DataStore.getInstance();
-    }
-
-    /**
-     * Add a new user to the system
+     * Add a user to the DataStore.
+     *
+     * @param user the user to add
      */
     public void addUser(User user) {
-        dataStore.addUser(user);
-        System.out.println("User added: " + user.getFirstName() + " " + user.getLastName());
+        if (user == null) return;
+        DataStore.getInstance().addUser(user);
+        System.out.println("[USER] Added: " + user.getLogin());
     }
 
     /**
-     * Remove a user from the system
+     * Remove a user from the DataStore.
+     *
+     * @param user the user to remove
      */
     public void removeUser(User user) {
-        dataStore.removeUser(user);
-        System.out.println("User removed: " + user.getFirstName() + " " + user.getLastName());
+        if (user == null) return;
+        DataStore.getInstance().removeUser(user);
+        System.out.println("[USER] Removed: " + user.getLogin());
     }
 
     /**
-     * Update user info (replaces old user with updated one)
+     * Update a user's record (in-memory; the object is already mutated).
+     *
+     * @param user the user that has been updated
      */
     public void updateUser(User user) {
-        List<User> users = dataStore.getUsers();
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(user.getId())) {
-                users.set(i, user);
-                System.out.println("User updated: " + user.getFirstName());
-                return;
-            }
-        }
-        System.out.println("User not found: " + user.getId());
+        if (user == null) return;
+        DataStore.getInstance().updateUser(user);
+        System.out.println("[USER] Updated: " + user.getLogin());
     }
 
     /**
-     * Find a user by login
+     * Find a user by their login string.
+     *
+     * @param login the login to search for
+     * @return the User, or null if not found
      */
     public User findUserByLogin(String login) {
-        for (User u : dataStore.getUsers()) {
-            if (u.getLogin().equals(login)) {
-                return u;
-            }
-        }
-        System.out.println("User not found with login: " + login);
-        return null;
+        if (login == null) return null;
+        Optional<User> found = DataStore.getInstance().findUserByLogin(login);
+        return found.orElse(null);
     }
 
     /**
-     * Get all users in the system
+     * Create and immediately register a new user of the given type.
+     *
+     * @param type      user type string (STUDENT, TEACHER, etc.)
+     * @param login     login name
+     * @param password  password
+     * @param firstName first name
+     * @param lastName  last name
+     * @param email     email
+     * @return the newly created and registered User
+     */
+    public User createAndRegister(String type, String login, String password,
+                                   String firstName, String lastName, String email) {
+        User u = UserFactory.createUser(type, login, password, firstName, lastName, email);
+        if (u != null) {
+            addUser(u);
+        }
+        return u;
+    }
+
+    /**
+     * Return all users currently in the system.
      */
     public List<User> getAllUsers() {
-        return dataStore.getUsers();
+        return DataStore.getInstance().getAllUsers();
     }
 }

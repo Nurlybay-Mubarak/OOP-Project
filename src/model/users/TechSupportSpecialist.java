@@ -1,93 +1,100 @@
-package model.users;                              
+package model.users;
 
-import model.support.SupportRequest;             
-import enums.RequestStatus;                       
-import storage.DataStore;                         
+import enums.RequestStatus;
+import model.support.SupportRequest;
+import storage.DataStore;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Tech support specialists can view, accept, reject requests
- * and mark them as done.
- * Statuses: NEW → VIEWED → ACCEPTED/REJECTED → DONE
+ * Represents a Technical Support Specialist.
+ * Handles SupportRequest objects: views new requests, accepts, rejects, or marks them done.
  */
-public class TechSupportSpecialist extends Employee {
+public class TechSupportSpecialist extends Employee implements Serializable {
 
-    private List<SupportRequest> requests;         
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Default constructor
-     */
+    // ------------------------------------------------------------------ //
+    //  Constructors
+    // ------------------------------------------------------------------ //
+
     public TechSupportSpecialist() {
         super();
-        this.requests = new ArrayList<>();
     }
 
-    /**
-     * Constructor with parameters
-     */
-    public TechSupportSpecialist(String id, String login, String password,
-                                  String firstName, String lastName, String email,
-                                  String employeeId, double salary) {
-        super(id, login, password, firstName, lastName, email, employeeId, salary);
-        this.requests = new ArrayList<>();
+    public TechSupportSpecialist(String login, String password, String firstName,
+                                  String lastName, String email, double salary) {
+        super(login, password, firstName, lastName, email, salary);
     }
 
+    // ------------------------------------------------------------------ //
+    //  Business Methods
+    // ------------------------------------------------------------------ //
+
     /**
-     * View new requests. When seen, status changes to VIEWED.
+     * Returns all NEW support requests from the DataStore.
+     *
+     * @return list of requests with NEW status
      */
     public List<SupportRequest> viewNewRequests() {
-        List<SupportRequest> allRequests = DataStore.getInstance().getRequests();
-        List<SupportRequest> newRequests = new ArrayList<>();
-
-        for (SupportRequest r : allRequests) {
-            if (r.getStatus() == RequestStatus.NEW) {
-                r.setStatus(RequestStatus.VIEWED);   
-                newRequests.add(r);
-                System.out.println(r);
-            }
-        }
-
-        if (newRequests.isEmpty()) {
-            System.out.println("No new requests.");
-        }
-
-        return newRequests;
+        return DataStore.getInstance().getAllSupportRequests().stream()
+                .filter(r -> r.getStatus() == RequestStatus.NEW)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Accept a request
+     * Accept a support request: changes its status from NEW/VIEWED to ACCEPTED.
+     *
+     * @param r the request to accept
      */
     public void acceptRequest(SupportRequest r) {
-        r.setStatus(RequestStatus.ACCEPTED);
-        System.out.println("Request accepted: " + r.getDescription());
+        if (r == null) return;
+        r.updateStatus(RequestStatus.ACCEPTED);
+        System.out.println("[SUPPORT] " + getLogin() + " ACCEPTED request: " + r.getId());
     }
 
     /**
-     * Reject a request
+     * Reject a support request: changes its status to REJECTED.
+     *
+     * @param r the request to reject
      */
     public void rejectRequest(SupportRequest r) {
-        r.setStatus(RequestStatus.REJECTED);
-        System.out.println("Request rejected: " + r.getDescription());
+        if (r == null) return;
+        r.updateStatus(RequestStatus.REJECTED);
+        System.out.println("[SUPPORT] " + getLogin() + " REJECTED request: " + r.getId());
     }
 
     /**
-     * Mark request as done
+     * Mark a support request as completed (DONE).
+     *
+     * @param r the request to close
      */
     public void markAsDone(SupportRequest r) {
-        r.setStatus(RequestStatus.DONE);
-        System.out.println("Request completed: " + r.getDescription());
+        if (r == null) return;
+        r.updateStatus(RequestStatus.DONE);
+        System.out.println("[SUPPORT] " + getLogin() + " marked DONE: " + r.getId());
     }
 
-    // GETTERS & SETTERS
+    // ------------------------------------------------------------------ //
+    //  Standard Overrides
+    // ------------------------------------------------------------------ //
 
-    public List<SupportRequest> getRequests() { return requests; }
-    public void setRequests(List<SupportRequest> requests) { this.requests = requests; }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() { return super.hashCode(); }
 
     @Override
     public String toString() {
-        return "Tech Support: " + getFirstName() + " " + getLastName();
+        return "TechSupportSpecialist{login='" + getLogin() + "', name='"
+                + getFirstName() + " " + getLastName() + "'}";
     }
 }

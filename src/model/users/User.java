@@ -1,83 +1,160 @@
-package model.users;                    
+package model.users;
 
-import patterns.Observer;               
-import enums.Language;                  
-import model.research.ResearchPaper;    
+import enums.Language;
+import model.communication.Message;
+import model.communication.News;
+import patterns.Observer;
+import model.research.ResearchPaper;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
- * Abstract base class for all users in the university system.
- * Implements Observer to receive notifications from Journal.
- * Implements Serializable for data persistence.
+ * Abstract base class for every user in the UniversitySystem.
+ * Implements Observer so any User can subscribe to a Journal and receive
+ * notifications about newly published papers.
  */
 public abstract class User implements Observer, Serializable {
 
-    private String id;
-    private String login;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String email;
+    private static final long serialVersionUID = 1L;
+
+    private String   id;
+    private String   login;
+    private String   password;
+    private String   firstName;
+    private String   lastName;
+    private String   email;
     private Language language;
 
-    /**
-     * Default constructor
-     */
+    /** Inbox: papers that were published after this user subscribed to a journal. */
+    private List<ResearchPaper> notifications;
+
+    /** News items this user has authored or can see. */
+    private List<News> newsFeed;
+
+    // ------------------------------------------------------------------ //
+    //  Constructors
+    // ------------------------------------------------------------------ //
+
     public User() {
-        this.language = Language.EN;
+        this.id            = UUID.randomUUID().toString();
+        this.language      = Language.EN;
+        this.notifications = new ArrayList<>();
+        this.newsFeed      = new ArrayList<>();
     }
 
-    /**
-     * Constructor with parameters
-     */
-    public User(String id, String login, String password,
-                String firstName, String lastName, String email) {
-        this.id = id;
-        this.login = login;
-        this.password = password;
+    public User(String login, String password, String firstName,
+                String lastName, String email) {
+        this();
+        this.login     = login;
+        this.password  = password;
         this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.language = Language.EN;     // язык по умолчанию
+        this.lastName  = lastName;
+        this.email     = email;
     }
 
+    // ------------------------------------------------------------------ //
+    //  Getters & Setters
+    // ------------------------------------------------------------------ //
+
+    public String getId()               { return id; }
+    public void   setId(String id)      { this.id = id; }
+
+    public String getLogin()               { return login; }
+    public void   setLogin(String login)   { this.login = login; }
+
+    public String getPassword()                  { return password; }
+    public void   setPassword(String password)   { this.password = password; }
+
+    public String getFirstName()                   { return firstName; }
+    public void   setFirstName(String firstName)   { this.firstName = firstName; }
+
+    public String getLastName()                  { return lastName; }
+    public void   setLastName(String lastName)   { this.lastName = lastName; }
+
+    public String getEmail()             { return email; }
+    public void   setEmail(String email) { this.email = email; }
+
+    public Language getLanguage()              { return language; }
+    public void     setLanguage(Language lang) { this.language = lang; }
+
+    public List<ResearchPaper> getNotifications() { return notifications; }
+
+    public List<News> getNewsFeed() { return newsFeed; }
+
+    // ------------------------------------------------------------------ //
+    //  Business Methods
+    // ------------------------------------------------------------------ //
+
     /**
-     * Authenticate user by checking login and password
+     * Validates credentials against stored login/password.
+     *
+     * @param inputLogin    the login provided
+     * @param inputPassword the password provided
+     * @return true if both match
      */
-    public boolean login(String login, String password) {
-        return this.login.equals(login) && this.password.equals(password);
+    public boolean login(String inputLogin, String inputPassword) {
+        return this.login != null
+                && this.login.equals(inputLogin)
+                && this.password != null
+                && this.password.equals(inputPassword);
     }
 
     /**
-     * Logout user
+     * "Log out" the user (session management is handled by the controller;
+     * this method clears any ephemeral session state on the user object).
      */
     public void logout() {
-        System.out.println(firstName + " logged out.");
-        
+        // Session token clearing would happen here in a real system.
+        // In-memory simulation: no persistent session state to clear.
     }
 
     /**
-     * Switch interface language
+     * Switch the UI language for this user.
+     *
+     * @param lang the desired Language
      */
     public void switchLanguage(Language lang) {
-        this.language = lang;
-        
+        if (lang != null) {
+            this.language = lang;
+        }
     }
 
     /**
-     * Observer pattern — called when new paper is published in subscribed journal
+     * Check whether the provided password matches this user's stored password.
+     *
+     * @param inputPassword the password to verify
+     * @return true if it matches
      */
-    public void update(String message) {
-        System.out.println("Notification for " + firstName + ": " + message);
-        
+    public boolean checkPassword(String inputPassword) {
+        return this.password != null && this.password.equals(inputPassword);
     }
 
+    // ------------------------------------------------------------------ //
+    //  Observer Pattern
+    // ------------------------------------------------------------------ //
+
+    /**
+     * Called by a Journal when a new paper is published.
+     * Stores the paper in the user's notification inbox.
+     *
+     * @param p the newly published paper
+     */
     @Override
-    public String toString() {
-        return firstName + " " + lastName + " (" + login + ")";
+    public void update(ResearchPaper p) {
+        if (p != null && !notifications.contains(p)) {
+            notifications.add(p);
+            System.out.println("[NOTIFICATION] " + getLogin()
+                    + " received update: new paper published -> " + p.getTitle());
+        }
     }
+
+    // ------------------------------------------------------------------ //
+    //  Standard Overrides
+    // ------------------------------------------------------------------ //
 
     @Override
     public boolean equals(Object o) {
@@ -92,26 +169,9 @@ public abstract class User implements Observer, Serializable {
         return Objects.hash(id);
     }
 
-    // GETTERS & SETTERS 
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public String getLogin() { return login; }
-    public void setLogin(String login) { this.login = login; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public Language getLanguage() { return language; }
-    public void setLanguage(Language language) { this.language = language; }
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{login='" + login
+                + "', name='" + firstName + " " + lastName + "'}";
+    }
 }

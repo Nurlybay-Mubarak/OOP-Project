@@ -1,28 +1,31 @@
+package patterns;
 
-import java.io.*;
-import java.util.*;
+import model.research.ResearchPaper;
 
 /**
- * 
+ * Subject interface — part of the Observer design pattern.
+ * A Journal acts as the Subject: it maintains a list of Observers (subscribers)
+ * and notifies them whenever a new paper is published.
  */
 public interface Subject {
+    /**
+     * Register an observer to receive future notifications.
+     *
+     * @param o the observer to add
+     */
+    void subscribe(Observer o);
 
     /**
-     * @param o 
-     * @return
+     * Remove an observer so it no longer receives notifications.
+     *
+     * @param o the observer to remove
      */
-    public void subscribe(Observer o);
+    void unsubscribe(Observer o);
 
     /**
-     * @param o 
-     * @return
+     * Notify all registered observers about a newly published paper.
+     *
+     * @param p the paper that was just published
      */
-    public void unsubscribe(Observer o);
-
-    /**
-     * @param p 
-     * @return
-     */
-    public void notifyObservers(ResearchPaper p);
-
+    void notifyObservers(ResearchPaper p);
 }

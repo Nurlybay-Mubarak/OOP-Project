@@ -1,23 +1,15 @@
-
-import java.io.*;
-import java.util.*;
+package exceptions;
 
 /**
- * 
+ * Thrown when a student attempts to register for a course that would exceed the 21-credit limit.
  */
-public class CreditLimitException {
+public class CreditLimitException extends Exception {
 
-    /**
-     * Default constructor
-     */
     public CreditLimitException() {
+        super("Credit limit exceeded.");
     }
 
-    /**
-     * @param message
-     */
     public CreditLimitException(String message) {
-        // TODO implement here
+        super(message);
     }
-
 }

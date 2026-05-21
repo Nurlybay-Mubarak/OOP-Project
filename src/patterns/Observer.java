@@ -1,18 +1,17 @@
+package patterns;
 
-import java.io.*;
-import java.util.*;
+import model.research.ResearchPaper;
 
 /**
- * 
+ * Observer interface — part of the Observer design pattern.
+ * Any class that wants to receive notifications when a new ResearchPaper
+ * is published in a Journal must implement this interface.
  */
 public interface Observer {
-
-
-
     /**
-     * @param p 
-     * @return
+     * Called by the Subject (Journal) when a new paper is published.
+     *
+     * @param p the newly published ResearchPaper
      */
-    public void update(ResearchPaper p);
-
+    void update(ResearchPaper p);
 }

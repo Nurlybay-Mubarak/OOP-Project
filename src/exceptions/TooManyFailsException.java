@@ -1,23 +1,16 @@
-
-import java.io.*;
-import java.util.*;
+package exceptions;
 
 /**
- * 
+ * Thrown when a student has failed too many courses and is subject to academic dismissal.
+ * The threshold is typically 3 failed courses in one semester.
  */
-public class TooManyFailsException {
+public class TooManyFailsException extends Exception {
 
-    /**
-     * Default constructor
-     */
     public TooManyFailsException() {
+        super("Student has failed too many courses.");
     }
 
-    /**
-     * @param message
-     */
     public TooManyFailsException(String message) {
-        // TODO implement here
+        super(message);
     }
-
 }

@@ -1,58 +1,69 @@
-package controller;                               
+package controller;
 
-import model.users.User;                          
-import enums.Language;                       
+import enums.Language;
+import model.users.User;
 import storage.DataStore;
 
-import java.io.*;
-import java.util.*;
+import java.util.Optional;
 
 /**
- * Handles authentication: login, logout, language switching.
- * Any user should access the system via authentication (requirement).
+ * Handles authentication: login, logout, and language switching.
  */
 public class AuthController {
 
-    /**
-     * Default constructor
-     */
-    public AuthController() {
-    }
+    private static User currentUser = null;
+
+    public AuthController() {}
 
     /**
-     * Login user by checking credentials against all users in DataStore.
-     * Returns the User object if found, null if credentials are wrong.
+     * Authenticate a user by login and password.
+     * Returns the User object on success, null on failure.
+     *
+     * @param login    the login string
+     * @param password the password string
+     * @return matched User, or null if credentials are invalid
      */
     public User login(String login, String password) {
-        List<User> users = DataStore.getInstance().getUsers();
-
-        for (User u : users) {
-            if (u.getLogin().equals(login) && u.getPassword().equals(password)) {
-                System.out.println("Welcome, " + u.getFirstName() + "!");
-                return u;
-            }
+        if (login == null || password == null) return null;
+        Optional<User> found = DataStore.getInstance().findUserByLoginAndPassword(login, password);
+        if (found.isPresent()) {
+            currentUser = found.get();
+            System.out.println("[AUTH] Login successful: " + currentUser.getLogin()
+                    + " (" + currentUser.getClass().getSimpleName() + ")");
+            return currentUser;
         }
-
-        System.out.println("Invalid login or password.");
+        System.out.println("[AUTH] Login failed for: " + login);
         return null;
     }
 
     /**
-     * Logout current user
+     * Log out the currently active user.
+     *
+     * @param user the user to log out
      */
     public void logout(User user) {
         if (user != null) {
             user.logout();
-            System.out.println(user.getFirstName() + " has been logged out.");
+            System.out.println("[AUTH] " + user.getLogin() + " logged out.");
         }
-        
+        currentUser = null;
     }
 
     /**
-     * Change language for a user (KZ, EN, RU)
+     * Change the interface language for a user.
+     *
+     * @param user     the user whose language preference is being changed
+     * @param language the new language
      */
     public void changeLanguage(User user, Language language) {
+        if (user == null || language == null) return;
         user.switchLanguage(language);
-        System.out.println("Language changed to " + language + " for " + user.getFirstName());
+        System.out.println("[AUTH] " + user.getLogin()
+                + " switched language to " + language);
+    }
+
+    /** Returns the user currently logged in (null if no active session). */
+    public static User getCurrentUser() {
+        return currentUser;
     }
 }

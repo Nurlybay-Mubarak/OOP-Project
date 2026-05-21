@@ -1,28 +1,21 @@
+package patterns;
 
-import UniversitySystem.model.research.ResearchPaper;
-
-import java.io.*;
-import java.util.*;
+import model.research.ResearchPaper;
 
 /**
- * 
+ * Concrete Strategy: sorts ResearchPapers by citation count (descending — most cited first).
  */
-public class ResearchPaperCitationComparator {
+public class ResearchPaperCitationComparator implements ResearchPaperComparator {
 
     /**
-     * Default constructor
+     * Compares two papers by their citation count in descending order.
+     *
+     * @param p1 the first paper
+     * @param p2 the second paper
+     * @return positive if p1 has fewer citations than p2 (p2 ranks higher)
      */
-    public ResearchPaperCitationComparator() {
-    }
-
-    /**
-     * @param p1 
-     * @param p2 
-     * @return
-     */
+    @Override
     public int compare(ResearchPaper p1, ResearchPaper p2) {
-        // TODO implement here
-        return 0;
+        return Integer.compare(p2.getCitations(), p1.getCitations());
     }
-
 }

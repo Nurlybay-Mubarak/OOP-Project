@@ -1,23 +1,15 @@
-
-import java.io.*;
-import java.util.*;
+package exceptions;
 
 /**
- * 
+ * Thrown when an operation that requires a Researcher role is attempted by a non-researcher.
  */
-public class NotResearcherException {
+public class NotResearcherException extends Exception {
 
-    /**
-     * Default constructor
-     */
     public NotResearcherException() {
+        super("This user is not a researcher.");
     }
 
-    /**
-     * @param message
-     */
     public NotResearcherException(String message) {
-        // TODO implement here
+        super(message);
     }
-
 }

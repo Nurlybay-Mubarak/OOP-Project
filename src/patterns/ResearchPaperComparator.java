@@ -1,19 +1,18 @@
+package patterns;
 
-import UniversitySystem.model.research.ResearchPaper;
-
-import java.io.*;
-import java.util.*;
+import model.research.ResearchPaper;
 
 /**
- * 
+ * Strategy interface for comparing two ResearchPaper objects.
+ * Concrete implementations define different sorting criteria.
  */
 public interface ResearchPaperComparator {
-
     /**
-     * @param p1 
-     * @param p2 
-     * @return
+     * Compare two ResearchPaper objects.
+     *
+     * @param p1 the first paper
+     * @param p2 the second paper
+     * @return negative if p1 < p2, 0 if equal, positive if p1 > p2
      */
-    public int compare(ResearchPaper p1, ResearchPaper p2);
-
+    int compare(ResearchPaper p1, ResearchPaper p2);
 }

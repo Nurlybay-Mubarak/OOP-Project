@@ -2,66 +2,89 @@ package model.research;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Represents a research project that multiple researchers can join.
+ */
 public class ResearchProject implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String topic;
-    private List<Researcher> participants = new ArrayList<>();
-    private List<ResearchPaper> publishedPapers = new ArrayList<>();
-    private Date startDate;
+    private String       name;
+    private String       description;
+    private List<String> participantIds;   // stores User IDs of participants
+
+    // ------------------------------------------------------------------ //
+    //  Constructors
+    // ------------------------------------------------------------------ //
 
     public ResearchProject() {
-        this.startDate = new Date();
+        this.participantIds = new ArrayList<>();
     }
 
-    public ResearchProject(String topic) {
-        this.topic = topic;
-        this.startDate = new Date();
+    public ResearchProject(String name, String description) {
+        this.name           = name;
+        this.description    = description;
+        this.participantIds = new ArrayList<>();
     }
 
-    public void addParticipant(Researcher researcher) {
-        if (researcher != null && !participants.contains(researcher)) {
-            participants.add(researcher);
+    // ------------------------------------------------------------------ //
+    //  Getters & Setters
+    // ------------------------------------------------------------------ //
+
+    public String getName()              { return name; }
+    public void   setName(String n)      { this.name = n; }
+
+    public String getDescription()       { return description; }
+    public void   setDescription(String d) { this.description = d; }
+
+    public List<String> getParticipantIds() { return participantIds; }
+
+    // ------------------------------------------------------------------ //
+    //  Business Methods
+    // ------------------------------------------------------------------ //
+
+    /**
+     * Add a participant (by their user ID) to the project.
+     *
+     * @param userId the ID of the user joining the project
+     */
+    public void addParticipant(String userId) {
+        if (!participantIds.contains(userId)) {
+            participantIds.add(userId);
         }
     }
 
-    public void addPaper(ResearchPaper paper) {
-        if (paper != null) {
-            publishedPapers.add(paper);
-        }
+    /**
+     * Remove a participant from the project.
+     *
+     * @param userId the ID of the user leaving
+     */
+    public void removeParticipant(String userId) {
+        participantIds.remove(userId);
     }
 
-    public String getInfo() {
-        return "ResearchProject{" +
-                "topic='" + topic + '\'' +
-                ", participants=" + participants.size() +
-                ", papers=" + publishedPapers.size() +
-                ", startDate=" + startDate +
-                '}';
+    // ------------------------------------------------------------------ //
+    //  Standard Overrides
+    // ------------------------------------------------------------------ //
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResearchProject that = (ResearchProject) o;
+        return Objects.equals(name, that.name);
     }
 
-    public String getTopic() {
-        return topic;
-    }
-
-    public List<Researcher> getParticipants() {
-        return participants;
-    }
-
-    public List<ResearchPaper> getPublishedPapers() {
-        return publishedPapers;
-    }
-
-    public Date getStartDate() {
-        return startDate;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     @Override
     public String toString() {
-        return getInfo();
+        return "ResearchProject{name='" + name + "', participants=" + participantIds.size() + "}";
     }
 }

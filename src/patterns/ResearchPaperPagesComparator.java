@@ -1,28 +1,21 @@
+package patterns;
 
-import UniversitySystem.model.research.ResearchPaper;
-
-import java.io.*;
-import java.util.*;
+import model.research.ResearchPaper;
 
 /**
- * 
+ * Concrete Strategy: sorts ResearchPapers by number of pages (ascending).
  */
-public class ResearchPaperPagesComparator {
+public class ResearchPaperPagesComparator implements ResearchPaperComparator {
 
     /**
-     * Default constructor
+     * Compares two papers by their page count in ascending order.
+     *
+     * @param p1 the first paper
+     * @param p2 the second paper
+     * @return negative if p1 has fewer pages
      */
-    public ResearchPaperPagesComparator() {
-    }
-
-    /**
-     * @param p1 
-     * @param p2 
-     * @return
-     */
+    @Override
     public int compare(ResearchPaper p1, ResearchPaper p2) {
-        // TODO implement here
-        return 0;
+        return Integer.compare(p1.getPages(), p2.getPages());
     }
-
 }

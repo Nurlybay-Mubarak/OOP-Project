@@ -1,9 +1,8 @@
+package enums;
 
 /**
- * 
+ * Represents the type of a Course.
  */
 public enum CourseType {
-    MAJOR,
-    MINOR,
-    FREE_ELECTIVE
+    MAJOR, MINOR, ELECTIVE
 }
